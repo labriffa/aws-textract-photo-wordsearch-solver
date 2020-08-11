@@ -78,8 +78,8 @@ class WordSearchSolver {
 	findWordsInRows(board, words) {
 		let foundWordPositions = {};
 
-		for (var row = 0; row < board.length; row++) {
-			for (var i = 0; i < words.length; i++) {
+		for (let row = 0; row < board.length; row++) {
+			for (let i = 0; i < words.length; i++) {
 				const regexp = new RegExp(words[i]);
 				let match = regexp.exec(board[row].join(''));
 				if (match) {
@@ -92,15 +92,70 @@ class WordSearchSolver {
 			}
 		}
 
-		for (var row = 0; row < board.length; row++) {
-			for (var i = 0; i < words.length; i++) {
+		for (let row = 0; row < board.length; row++) {
+			for (let i = 0; i < words.length; i++) {
 				const regexp = new RegExp(words[i]);
-				let match = regexp.exec(board[row].reverse().join(''));
+				let match = regexp.exec(board[row].slice().reverse().join(''));
 				if (match) {
 					foundWordPositions[words[i]] = {
 						rowIndex: row,
-						startIndex: (14 - (match.index + words[i].length)) + 1,
-						endIndex: 14 - match.index
+						startIndex: ((board.length - 1) - (match.index + words[i].length)) + 1,
+						endIndex: (board.length - 1) - match.index
+					};
+				}
+			}
+		}
+
+		return foundWordPositions;
+	}
+
+	/**
+	 * When given a board along with a list of rows it finds the start and end indexes of found words along with their corresponding
+	 * row index
+	 * 
+	 * @param		The board we want to check
+	 * @param		The list of words we want to check against
+	 * 
+	 * @returns		A mapping of found words along with their row index and start/end index positions
+	 */
+	findWordsInColumns(board, words) {
+		let columns = [];
+		let foundWordPositions = {};
+
+		for (var row = 0; row < board.length; row++) {
+			for (var col = 0; col < board[row].length; col++) {
+				if (!columns[col]) {
+					columns[col] = [board[row][col]];
+				} else {
+					columns[col].push(board[row][col]);
+				}
+			}
+		}
+
+
+		for (var col = 0; col < columns.length; col++) {
+			for (var i = 0; i < words.length; i++) {
+				const regexp = new RegExp(words[i]);
+				let match = regexp.exec(columns[col].join(''));
+				if (match) {
+					foundWordPositions[words[i]] = {
+						colIndex: col,
+						startIndex: match.index,
+						endIndex: match.index + words[i].length
+					};
+				}
+			}
+		}
+
+		for (var col = 0; col < columns.length; col++) {
+			for (var i = 0; i < words.length; i++) {
+				const regexp = new RegExp(words[i]);
+				let match = regexp.exec(columns[col].slice().reverse().join(''));
+				if (match) {
+					foundWordPositions[words[i]] = {
+						colIndex: col,
+						startIndex: 14 - match.index - words[i].length + 1,
+						endIndex: 14 - match.index + 1
 					};
 				}
 			}
@@ -114,7 +169,7 @@ class WordSearchSolver {
 	 * 
 	 * @param	foundWordPositions 
 	 */
-	findWordLocations(foundWordPositions) {
+	findWordLocationsInRows(foundWordPositions) {
 		let geometryWords = [];
 
 		for (const key of Object.keys(foundWordPositions)) {
@@ -122,6 +177,28 @@ class WordSearchSolver {
 			// for each word position find the corresponding parent id
 			let parentId = this.parentLineIds[foundWordPosition.rowIndex];
 			geometryWords.push(this.parentLineIdsToChildrenGeometry[parentId].slice(foundWordPosition.startIndex, foundWordPosition.endIndex + 1));
+		}
+
+		return geometryWords;
+	}
+
+	/**
+	 * Finds the corresponding geometry values from a given list of word positions
+	 * 
+	 * @param	foundWordPositions 
+	 */
+	findWordLocationsInColumns(foundWordPositions) {
+		let geometryWords = [];
+
+		for (const key of Object.keys(foundWordPositions)) {
+			let foundWordPosition = foundWordPositions[key];
+			let colWords = [];
+			for (var i = foundWordPosition.startIndex; i < foundWordPosition.endIndex; i++) {
+				// for each word position find the corresponding parent id
+				let parentId = this.parentLineIds[i];
+				colWords.push(...this.parentLineIdsToChildrenGeometry[parentId].slice(foundWordPosition.colIndex, foundWordPosition.colIndex + 1));
+			}
+			geometryWords.push(colWords);
 		}
 
 		return geometryWords;
