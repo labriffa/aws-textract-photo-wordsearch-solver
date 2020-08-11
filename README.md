@@ -1,4 +1,4 @@
-# aws-textract-camera-wordsearch-solver
+# aws-textract-photo-wordsearch-solver
 Completes a word search from a given photo using AWS Textract.
 
 ### Photo to Solution
