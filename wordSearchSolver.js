@@ -1,5 +1,3 @@
-import { METHODS } from "http";
-
 class WordSearchSolver {
 	constructor(blocks) {
 		this.board = [];
