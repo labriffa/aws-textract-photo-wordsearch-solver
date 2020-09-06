@@ -1,54 +1,55 @@
+import { METHODS } from "http";
+
 class WordSearchSolver {
-	constructor() {
-		// Allows us to assoicate rows in boards to parent line ids
-		this.parentLineIds = [];
-
-		// Provides us with a mapping for parent line ids to children ids so we can later associate full children objects to parents
-		this.parentLineIdsToChildren = {};
-
-		// Provides us with a mapping for parent line ids to children ids so we can later associate full children objects to parents
-		this.parentIdsToChildrenIds = {};
-
-		// Provides us with a mapping for parent line ids to full children objects (allows us to get geometry information)
-		this.parentLineIdsToChildrenGeometry = {};
-
-		// The board comprised of rows
+	constructor(blocks) {
 		this.board = [];
+		this.wordsToSearch = [];
+		this.generateBoard(blocks);
 	}
 
 	generateBoard(blocks) {
+		// Provides us with a mapping for parent line ids to full children objects (allows us to get geometry information)
+		let parentLineIdsToChildrenGeometry = new Map();
+
+		// Provides us with a mapping for parent line ids to children ids so we can later associate full children objects to parents
+		let parentIdsToChildrenIds = {};
+
+		// Allows us to assoicate rows in boards to parent line ids
+		let parentLineIds = [];
+
 		for (const block of blocks) {
 			// Find all lines with spaces in them
 			if (block.BlockType === 'LINE') {
-				if (block.Text.indexOf(' ') >= 0) {
+				if (block.Text.indexOf(' ') >= 0 && block.Text.match(/([\s]+)/g).length >= 5) {
+					this.board.push(block.Text.split(' ').join('').split(''));
 
-					// Ensure split line is only comprised of single letters
-					let isValidRow = this.isValidRow(block.Text);
+					// Store the parent ids so we can associate the word/letter children later
+					parentLineIds.push(block.Id);
+					parentIdsToChildrenIds[block.Id] = block.Relationships[0].Ids;
 
-					// Aggregate the rows into the board
-					if (isValidRow) {
-						this.board.push(block.Text.split(' '));
-
-						// Store the parent ids so we can associate the word/letter children later
-						this.parentLineIds.push(block.Id);
-						this.parentIdsToChildrenIds[block.Id] = block.Relationships[0].Ids;
-					}
 				}
 			} else if (block.BlockType === 'WORD') {
+				// Find all searchable words (Assume for now that they appear towards the bottom half of the screen)
+				if (block.Text && block.Text.length > 1) {
+					if (block.Geometry.BoundingBox.Top * this.IMAGE_HEIGHT >= this.IMAGE_HEIGHT / 2) {
+						this.wordsToSearch[block.Text.toUpperCase()] = block.Geometry.BoundingBox;
+					}
+				}
 
 				// Find all letters
 				if (block.Text && block.Text.length === 1) {
 
 					// Find the matching parent line ID
-					for (const key of Object.keys(this.parentIdsToChildrenIds)) {
-						let children = this.parentIdsToChildrenIds[key];
+					for (const key of Object.keys(parentIdsToChildrenIds)) {
+						let children = parentIdsToChildrenIds[key];
 						if (children.includes(block.Id)) {
-
 							// Add the geometry objects
-							if (this.parentLineIdsToChildrenGeometry[key]) {
-								this.parentLineIdsToChildrenGeometry[key].push(block.Geometry.BoundingBox);
+							if (parentLineIdsToChildrenGeometry.get(key)) {
+								let existingValues = parentLineIdsToChildrenGeometry.get(key);
+								existingValues.push({ text: block.Text, id: block.Id, geometry: block.Geometry });
+								parentLineIdsToChildrenGeometry.set(key, existingValues);
 							} else {
-								this.parentLineIdsToChildrenGeometry[key] = [block.Geometry.BoundingBox];
+								parentLineIdsToChildrenGeometry.set(key, [{ text: block.Text, id: block.Id, geometry: block.Geometry }]);
 							}
 						}
 					}
@@ -56,152 +57,182 @@ class WordSearchSolver {
 			}
 		}
 
+		this.board = Array.from(parentLineIdsToChildrenGeometry.values());
+	}
+
+	/**
+	 * Retrieves the boards rows
+	 * 
+	 * @return	A 2D array representing each row
+	 */
+	getRows() {
 		return this.board;
 	}
 
 	/**
-	 * From a given row string comprised of spaces determines if the row is comprised of singular letters
+	 * Retrieves the boards columns
+	 * 
+	 * @return	A 2D array representing each column
 	 */
-	isValidRow(rowStr) {
-		return rowStr.split(' ').every((x) => x.length === 1);
-	}
-
-	/**
-	 * When given a board along with a list of rows it finds the start and end indexes of found words along with their corresponding
-	 * row index
-	 * 
-	 * @param		The board we want to check
-	 * @param		The list of words we want to check against
-	 * 
-	 * @returns		A mapping of found words along with their row index and start/end index positions
-	 */
-	findWordsInRows(board, words) {
-		let foundWordPositions = {};
-
-		for (let row = 0; row < board.length; row++) {
-			for (let i = 0; i < words.length; i++) {
-				const regexp = new RegExp(words[i]);
-				let match = regexp.exec(board[row].join(''));
-				if (match) {
-					foundWordPositions[words[i]] = {
-						rowIndex: row,
-						startIndex: match.index,
-						endIndex: match.index + words[i].length - 1
-					};
-				}
-			}
-		}
-
-		for (let row = 0; row < board.length; row++) {
-			for (let i = 0; i < words.length; i++) {
-				const regexp = new RegExp(words[i]);
-				let match = regexp.exec(board[row].slice().reverse().join(''));
-				if (match) {
-					foundWordPositions[words[i]] = {
-						rowIndex: row,
-						startIndex: ((board.length - 1) - (match.index + words[i].length)) + 1,
-						endIndex: (board.length - 1) - match.index
-					};
-				}
-			}
-		}
-
-		return foundWordPositions;
-	}
-
-	/**
-	 * When given a board along with a list of rows it finds the start and end indexes of found words along with their corresponding
-	 * row index
-	 * 
-	 * @param		The board we want to check
-	 * @param		The list of words we want to check against
-	 * 
-	 * @returns		A mapping of found words along with their row index and start/end index positions
-	 */
-	findWordsInColumns(board, words) {
+	getColumns() {
 		let columns = [];
-		let foundWordPositions = {};
 
-		for (var row = 0; row < board.length; row++) {
-			for (var col = 0; col < board[row].length; col++) {
+		for (var row = 0; row < this.board.length; row++) {
+			for (var col = 0; col < this.board[row].length; col++) {
 				if (!columns[col]) {
-					columns[col] = [board[row][col]];
-				} else {
-					columns[col].push(board[row][col]);
+					columns[col] = [];
 				}
+				columns[col].push(this.board[row][col]);
 			}
 		}
 
-
-		for (var col = 0; col < columns.length; col++) {
-			for (var i = 0; i < words.length; i++) {
-				const regexp = new RegExp(words[i]);
-				let match = regexp.exec(columns[col].join(''));
-				if (match) {
-					foundWordPositions[words[i]] = {
-						colIndex: col,
-						startIndex: match.index,
-						endIndex: match.index + words[i].length
-					};
-				}
-			}
-		}
-
-		for (var col = 0; col < columns.length; col++) {
-			for (var i = 0; i < words.length; i++) {
-				const regexp = new RegExp(words[i]);
-				let match = regexp.exec(columns[col].slice().reverse().join(''));
-				if (match) {
-					foundWordPositions[words[i]] = {
-						colIndex: col,
-						startIndex: 14 - match.index - words[i].length + 1,
-						endIndex: 14 - match.index + 1
-					};
-				}
-			}
-		}
-
-		return foundWordPositions;
+		return columns;
 	}
 
 	/**
-	 * Finds the corresponding geometry values from a given list of word positions
+	 * Retrieves the boards diagonal
 	 * 
-	 * @param	foundWordPositions 
+	 * @return	A 2D array representing each diagonal
 	 */
-	findWordLocationsInRows(foundWordPositions) {
-		let geometryWords = [];
-
-		for (const key of Object.keys(foundWordPositions)) {
-			let foundWordPosition = foundWordPositions[key];
-			// for each word position find the corresponding parent id
-			let parentId = this.parentLineIds[foundWordPosition.rowIndex];
-			geometryWords.push(this.parentLineIdsToChildrenGeometry[parentId].slice(foundWordPosition.startIndex, foundWordPosition.endIndex + 1));
-		}
-
-		return geometryWords;
+	getDiagonals() {
+		return this.getBottomLeftDiagonals().concat(this.getBottomRightDiagonals());
 	}
 
 	/**
-	 * Finds the corresponding geometry values from a given list of word positions
+	 * Retrieves the boards bottom left diagonals
 	 * 
-	 * @param	foundWordPositions 
+	 * @return	A 2D array representing each bottom left diagonal
 	 */
-	findWordLocationsInColumns(foundWordPositions) {
-		let geometryWords = [];
+	getBottomLeftDiagonals() {
+		let diagonals = [];
 
-		for (const key of Object.keys(foundWordPositions)) {
-			let foundWordPosition = foundWordPositions[key];
-			let colWords = [];
-			for (var i = foundWordPosition.startIndex; i < foundWordPosition.endIndex; i++) {
-				// for each word position find the corresponding parent id
-				let parentId = this.parentLineIds[i];
-				colWords.push(...this.parentLineIdsToChildrenGeometry[parentId].slice(foundWordPosition.colIndex, foundWordPosition.colIndex + 1));
+		for (var i = 0; i < this.board[0].length; i++) {
+			let diagonal = [this.board[0][i]];
+
+			for (var j = 1; j < this.board.length; j++) {
+				if (this.board[j][i - j]) {
+					diagonal.push(this.board[j][i - j]);
+				}
 			}
-			geometryWords.push(colWords);
+
+			diagonals.push(diagonal);
 		}
 
-		return geometryWords;
+		for (var i = 1; i < this.board.length; i++) {
+			let counter = this.board.length - 1;
+			let diagonal = [this.board[i][counter]];
+
+			for (var j = i + 1; j < this.board.length; j++) {
+				counter--;
+				diagonal.push(this.board[j][counter]);
+			}
+
+			diagonals.push(diagonal);
+		}
+
+		return diagonals;
+	}
+
+	/**
+	 * Retrieves the boards bottom right diagonals
+	 * 
+	 * @return	A 2D array representing each bottom right diagonal
+	 */
+	getBottomRightDiagonals() {
+		let diagonals = [];
+
+		for (var i = 0; i < this.board[0].length; i++) {
+			let diagonal = [this.board[0][i]];
+
+			for (var j = 1; j < this.board.length - i; j++) {
+				diagonal.push(this.board[j][j + i]);
+			}
+
+			diagonals.push(diagonal);
+		}
+
+		for (var i = 1; i < this.board.length; i++) {
+			let diagonal = [this.board[i][0]];
+
+			for (var j = i + 1; j < this.board.length; j++) {
+				diagonal.push(this.board[j][j - i]);
+			}
+
+			diagonals.push(diagonal);
+		}
+
+		return diagonals;
+	}
+
+	/**
+	 * Finds words in a given direction both forwards and backwards
+	 *
+	 * @param		A 2D array holding contents of the direction
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
+	findWordsInDirection(direction, words) {
+		let foundWords = [];
+
+		for (let i = 0; i < direction.length; i++) {
+			for (let j = 0; j < words.length; j++) {
+				let directionText = direction[i].map((el) => el.text);
+				let wordIndex = directionText.join('').indexOf(words[j]);
+				let wordIndexReversed = directionText.join('').indexOf(words[j].split('').reverse().join(''));
+
+				if (wordIndex >= 0) {
+					foundWords.push(direction[i].slice(wordIndex, wordIndex + words[j].length));
+				}
+				if (wordIndexReversed >= 0) {
+					foundWords.push(direction[i].slice(wordIndexReversed, wordIndexReversed + words[j].length).reverse());
+				}
+			}
+		}
+
+		return foundWords;
+	}
+
+	/**
+	 * Looks through the boards rows to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
+	findWordsInRows(words) {
+		return this.findWordsInDirection(this.getRows(), words);
+	}
+
+	/**
+	 * Looks through the boards columns to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
+	findWordsInColumns(words) {
+		return this.findWordsInDirection(this.getColumns(), words);
+	}
+
+	/**
+	 * Looks through the boards diagonals to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
+	findWordsInDiagonals(words) {
+		return this.findWordsInDirection(this.getDiagonals(), words);
+	}
+
+	/**
+	 * Retrieves the words to find on this board
+	 * 
+	 * @return	A 2D array representing each searchable word
+	 */
+	getWordsToSearch() {
+		return this.wordsToSearch;
 	}
 }
 
