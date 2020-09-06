@@ -116,16 +116,20 @@ class WordSearchSolver {
 			diagonals.push(diagonal);
 		}
 
-		for (var i = 1; i < this.board.length; i++) {
-			let counter = this.board.length - 1;
-			let diagonal = [this.board[i][counter]];
+		for (var i = 1; i < this.board[0].length; i++) {
+			if (this.board[i]) {
+				let counter = this.board[0].length - 1;
+				let diagonal = [this.board[i][counter]];
 
-			for (var j = i + 1; j < this.board.length; j++) {
-				counter--;
-				diagonal.push(this.board[j][counter]);
+				for (var j = i + 1; j < this.board[0].length; j++) {
+					if (this.board[j]) {
+						counter--;
+						diagonal.push(this.board[j][counter]);
+					}
+				}
+
+				diagonals.push(diagonal);
 			}
-
-			diagonals.push(diagonal);
 		}
 
 		return diagonals;
@@ -142,21 +146,27 @@ class WordSearchSolver {
 		for (var i = 0; i < this.board[0].length; i++) {
 			let diagonal = [this.board[0][i]];
 
-			for (var j = 1; j < this.board.length - i; j++) {
-				diagonal.push(this.board[j][j + i]);
+			for (var j = 1; j < this.board[0].length - i; j++) {
+				if (this.board[j]) {
+					diagonal.push(this.board[j][j + i]);
+				}
 			}
 
 			diagonals.push(diagonal);
 		}
 
-		for (var i = 1; i < this.board.length; i++) {
-			let diagonal = [this.board[i][0]];
+		for (var i = 1; i < this.board[0].length; i++) {
+			if (this.board[i]) {
+				let diagonal = [this.board[i][0]];
 
-			for (var j = i + 1; j < this.board.length; j++) {
-				diagonal.push(this.board[j][j - i]);
+				for (var j = i + 1; j < this.board[0].length; j++) {
+					if (this.board[j]) {
+						diagonal.push(this.board[j][j - i]);
+					}
+				}
+
+				diagonals.push(diagonal);
 			}
-
-			diagonals.push(diagonal);
 		}
 
 		return diagonals;
