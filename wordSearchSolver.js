@@ -232,10 +232,24 @@ class WordSearchSolver {
 		return this.findWordsInDirection(this.getDiagonals(), words);
 	}
 
+	/**
+	 * Looks through the boards bottom left diagonals to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
 	findWordsInBottomLeftDiagonals(words) {
 		return this.findWordsInDirection(this.getBottomLeftDiagonals(), words);
 	}
 
+	/**
+	 * Looks through the boards bottom right diagonals to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		A 2D array representing the found letters of each identified word
+	 */
 	findWordsInBottomRightDiagonals(words) {
 		return this.findWordsInDirection(this.getBottomRightDiagonals(), words);
 	}
