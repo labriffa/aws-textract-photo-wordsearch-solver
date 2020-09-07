@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WordsearchSolver } from './wordSearchSolver.js';
-import { WordsearchSolutionDrawer } from './WordSearchSolutionDrawer.js';
+import { WordsearchSolutionDrawer } from './wordSearchSolutionDrawer.js';
 const awsTextractResponse = require('./tests/mock-textract-response.json');
 import { Dimensions } from 'react-native';
 
