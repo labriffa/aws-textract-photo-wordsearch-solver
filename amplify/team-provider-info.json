@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-wordsearchsolver-dev-143131-authRole",
+            "UnauthRoleArn": "arn:aws:iam::991257929142:role/amplify-wordsearchsolver-dev-143131-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::991257929142:role/amplify-wordsearchsolver-dev-143131-authRole",
+            "Region": "eu-west-1",
+            "DeploymentBucketName": "amplify-wordsearchsolver-dev-143131-deployment",
+            "UnauthRoleName": "amplify-wordsearchsolver-dev-143131-unauthRole",
+            "StackName": "amplify-wordsearchsolver-dev-143131",
+            "StackId": "arn:aws:cloudformation:eu-west-1:991257929142:stack/amplify-wordsearchsolver-dev-143131/71aeaad0-f10e-11ea-b9a6-06777de660c1",
+            "AmplifyAppId": "d2z283fhp058eg"
+        }
+    }
+}
