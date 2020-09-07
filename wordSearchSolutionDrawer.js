@@ -48,13 +48,13 @@ class WordSearchSolutionDrawer {
 		this.image.onload = (() => {
 			// Apply the correct aspect ratio depending on if we have more width or height
 			if (this.image.width > this.image.height) {
-				let maxHeight = this.image.width / this.image.height * this.width;
-				this.IMAGE_WIDTH = this.width;
+				let maxHeight = this.image.width / this.image.height * this.viewWidth;
+				this.IMAGE_WIDTH = this.viewWidth;
 				this.IMAGE_HEIGHT = maxHeight;
 			} else {
-				let maxWidth = this.image.width / this.image.height * this.height;
+				let maxWidth = this.image.width / this.image.height * this.viewHeight;
 				this.IMAGE_WIDTH = maxWidth;
-				this.IMAGE_HEIGHT = this.height;
+				this.IMAGE_HEIGHT = this.viewHeight;
 			}
 
 			// Set canvas dimensions
