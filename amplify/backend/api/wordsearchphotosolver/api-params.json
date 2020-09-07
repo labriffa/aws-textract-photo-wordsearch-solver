@@ -1,0 +1,34 @@
+{
+    "paths": [
+        {
+            "name": "/analyse",
+            "lambdaFunction": "resttextract",
+            "privacy": {
+                "open": true
+            }
+        }
+    ],
+    "resourceName": "wordsearchphotosolver",
+    "apiName": "wordsearchphotosolver",
+    "functionArns": [
+        {
+            "lambdaFunction": "resttextract"
+        }
+    ],
+    "privacy": {
+        "auth": 0,
+        "unauth": 0,
+        "authRoleName": "amplify-wordsearchsolver-dev-143131-authRole",
+        "unAuthRoleName": "amplify-wordsearchsolver-dev-143131-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "resttextract",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ]
+}
