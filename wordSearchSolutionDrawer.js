@@ -1,8 +1,8 @@
 class WordSearchSolutionDrawer {
-	constructor(context, imageUrl) {
-		this.IMAGE_URL = imageUrl;
+	constructor(context, imageUrl, wordsToSearch) {
+		this.wordsToSearch = wordsToSearch;
 		this.GLOBAL_ALPHA = 0.55;
-		this.SCALE = 0.75;
+		this.SCALE = 0.5;
 		this.COLORS = [
 			"aquamarine",
 			"bisque", "black", "blueviolet", "brown", "burlywood",
@@ -33,7 +33,8 @@ class WordSearchSolutionDrawer {
 
 		this.context = context;
 		this.image = new Image();
-		this.image.src = this.IMAGE_URL;
+		this.image.crossOrigin = "anonymous";
+		this.image.src = imageUrl;
 	}
 
 	/**
@@ -92,6 +93,7 @@ class WordSearchSolutionDrawer {
 		words.forEach((word) => {
 			let geometry = this.getMinMaxGeometryWord(word);
 			let randomColorIndex = this.getRandomColorIndex();
+			console.log(this.IMAGE_WIDTH);
 
 			this.drawLine(
 				{
@@ -104,7 +106,7 @@ class WordSearchSolutionDrawer {
 				}, geometry.maxHeight, randomColorIndex
 			);
 
-			let wordToColour = wordsToSearch[word.map((letter) => letter.text).join('')];
+			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
 			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
 		});
 	}
@@ -130,7 +132,7 @@ class WordSearchSolutionDrawer {
 				}, geometry.maxHeight, randomColorIndex
 			);
 
-			let wordToColour = wordsToSearch[word.map((letter) => letter.text).join('')];
+			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
 			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
 		});
 	}
@@ -156,7 +158,7 @@ class WordSearchSolutionDrawer {
 				}, geometry.maxHeight, randomColorIndex
 			);
 
-			let wordToColour = wordsToSearch[word.map((letter) => letter.text).join('')];
+			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
 			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
 		});
 	}
@@ -182,7 +184,7 @@ class WordSearchSolutionDrawer {
 				}, geometry.maxHeight, randomColorIndex
 			);
 
-			let wordToColour = wordsToSearch[word.map((letter) => letter.text).join('')];
+			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
 			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
 		});
 	}
@@ -241,3 +243,5 @@ class WordSearchSolutionDrawer {
 		return Math.floor(Math.random() * this.COLORS.length);
 	}
 }
+
+export const WordsearchSolutionDrawer = WordSearchSolutionDrawer;

@@ -29,9 +29,7 @@ class WordSearchSolver {
 			} else if (block.BlockType === 'WORD') {
 				// Find all searchable words (Assume for now that they appear towards the bottom half of the screen)
 				if (block.Text && block.Text.length > 1) {
-					if (block.Geometry.BoundingBox.Top * this.IMAGE_HEIGHT >= this.IMAGE_HEIGHT / 2) {
-						this.wordsToSearch[block.Text.toUpperCase()] = block.Geometry.BoundingBox;
-					}
+					this.wordsToSearch[block.Text.toUpperCase()] = block.Geometry.BoundingBox;
 				}
 
 				// Find all letters
@@ -232,6 +230,14 @@ class WordSearchSolver {
 	 */
 	findWordsInDiagonals(words) {
 		return this.findWordsInDirection(this.getDiagonals(), words);
+	}
+
+	findWordsInBottomLeftDiagonals(words) {
+		return this.findWordsInDirection(this.getBottomLeftDiagonals(), words);
+	}
+
+	findWordsInBottomRightDiagonals(words) {
+		return this.findWordsInDirection(this.getBottomRightDiagonals(), words);
 	}
 
 	/**
