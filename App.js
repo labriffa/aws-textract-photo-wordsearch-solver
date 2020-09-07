@@ -1,8 +1,9 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { WordsearchSolver } from './wordSearchSolver.js';
-import { WordsearchSolutionDrawer } from './wordSearchSolutionDrawer.js';
+import { WordsearchSolutionDrawer } from './WordSearchSolutionDrawer.js';
 const awsTextractResponse = require('./tests/mock-textract-response.json');
+import { Dimensions } from 'react-native';
 
 export default class App extends React.Component {
 	componentDidMount() {
@@ -18,7 +19,9 @@ export default class App extends React.Component {
 		const foundWordsInBottomLeftDiagonals = solver.findWordsInBottomLeftDiagonals(Object.keys(wordsToSearch));
 		const foundWordsInBottomRightDiagonals = solver.findWordsInBottomRightDiagonals(Object.keys(wordsToSearch));
 
-		var drawer = new WordsearchSolutionDrawer(context, 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599496791/github/solar-system-word-search.png', wordsToSearch);
+		let viewWidth = Dimensions.get('window').width;
+		let viewHeight = Dimensions.get('window').height;
+		var drawer = new WordsearchSolutionDrawer(context, 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599496791/github/solar-system-word-search.png', wordsToSearch, viewWidth, viewHeight);
 		drawer.colorBoard({
 			rows: foundWordsInRows,
 			columns: foundWordsInColumns,

@@ -1,8 +1,10 @@
 class WordSearchSolutionDrawer {
-	constructor(context, imageUrl, wordsToSearch) {
+	constructor(context, imageUrl, wordsToSearch, viewWidth, viewHeight) {
+		this.viewWidth = viewWidth;
+		this.viewHeight = viewHeight;
 		this.wordsToSearch = wordsToSearch;
 		this.GLOBAL_ALPHA = 0.55;
-		this.SCALE = 0.5;
+		this.SCALE = 1;
 		this.COLORS = [
 			"aquamarine",
 			"bisque", "black", "blueviolet", "brown", "burlywood",
@@ -44,8 +46,16 @@ class WordSearchSolutionDrawer {
 	 */
 	colorBoard(wordLocations) {
 		this.image.onload = (() => {
-			this.IMAGE_WIDTH = this.image.width;
-			this.IMAGE_HEIGHT = this.image.height;
+			// Apply the correct aspect ratio depending on if we have more width or height
+			if (this.image.width > this.image.height) {
+				let maxHeight = this.image.width / this.image.height * this.width;
+				this.IMAGE_WIDTH = this.width;
+				this.IMAGE_HEIGHT = maxHeight;
+			} else {
+				let maxWidth = this.image.width / this.image.height * this.height;
+				this.IMAGE_WIDTH = maxWidth;
+				this.IMAGE_HEIGHT = this.height;
+			}
 
 			// Set canvas dimensions
 			this.context.canvas.width = this.IMAGE_WIDTH * this.SCALE;
