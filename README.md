@@ -5,9 +5,9 @@ Attempts to identify words on a given word search photo. Uses AWS Amplify and Ex
   
 ## Photo to Solution
 <p align="center">
-  <img width="300" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666608/github/download_5.png" alt="Wordsearch to Solve" />
-  <img width="300" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666811/github/download_6.png" alt="Wordsearch to Solve" />
-  <img width="250" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666430/github/wordsearch-solver-mock.png" alt="Wordsearch Solved" />
+  <img height="450" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666608/github/download_5.png" alt="Wordsearch to Solve" />
+  <img height="450" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666811/github/download_6.png" alt="Wordsearch to Solve" />
+  <img height="450" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666430/github/wordsearch-solver-mock.png" alt="Wordsearch Solved" />
 </p>
 
 ## Todos
