@@ -1,49 +1,62 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { WordsearchSolver } from './wordSearchSolver.js';
-import { WordsearchSolutionDrawer } from './wordSearchSolutionDrawer.js';
-const awsTextractResponse = require('./tests/mock-textract-response.json');
-import { Dimensions } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, View, Button, TouchableWithoutFeedback, Text } from 'react-native';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
+import { BlurView } from 'expo-blur';
 
-export default class App extends React.Component {
-	componentDidMount() {
-		this.updateCanvas();
-	}
-	updateCanvas() {
-		const context = this.refs.canvas.getContext('2d');
-		let blocks = awsTextractResponse.Blocks;
-		const solver = new WordsearchSolver(blocks);
-		const wordsToSearch = solver.getWordsToSearch();
-		const foundWordsInRows = solver.findWordsInRows(Object.keys(wordsToSearch));
-		const foundWordsInColumns = solver.findWordsInColumns(Object.keys(wordsToSearch));
-		const foundWordsInBottomLeftDiagonals = solver.findWordsInBottomLeftDiagonals(Object.keys(wordsToSearch));
-		const foundWordsInBottomRightDiagonals = solver.findWordsInBottomRightDiagonals(Object.keys(wordsToSearch));
 
-		let viewWidth = Dimensions.get('window').width;
-		let viewHeight = Dimensions.get('window').height;
-		var drawer = new WordsearchSolutionDrawer(context, 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599496791/github/solar-system-word-search.png', wordsToSearch, viewWidth, viewHeight);
-		drawer.colorBoard({
-			rows: foundWordsInRows,
-			columns: foundWordsInColumns,
-			bottomLeftDiagonals: foundWordsInBottomLeftDiagonals,
-			bottomRightDiagonals: foundWordsInBottomRightDiagonals
-		});
-	}
+// 
+import HomeScreen from './HomeScreen'
+import CameraScreen from './CameraScreen'
 
-	render() {
-		return (
-			<View style={styles.container}>
-				<canvas ref="canvas" />
-			</View>
-		);
+const RootStack = createStackNavigator({
+	Home: {
+		screen: HomeScreen,
+		navigationOptions: ({ navigation }) => ({
+			headerTintColor: 'white',
+			headerTitle: 'Word Search Solver',
+			headerStyle: {
+				backgroundColor: '#353b48'
+			},
+			headerTitleStyle: {
+				textAlign: "center",
+				flex: 1,
+				fontSize: 19
+			}
+		})
+	},
+	Camera: {
+		screen: CameraScreen,
+		navigationOptions: ({ navigation }) => ({
+			headerShown: false
+		})
 	}
-}
+},
+	{
+		defaultNavigationOptions: {
+			...TransitionPresets.SlideFromRightIOS,
+		}
+	},
+);
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
+	text: {
+		backgroundColor: '#e84118',
+		textAlign: 'center',
+		borderRadius: 5,
+		paddingTop: 5,
+		paddingBottom: 5,
+		color: 'white',
+		borderWidth: 2,
+		borderColor: '#e84118',
+		fontSize: 16,
+		width: 100,
+		marginRight: 15
 	}
 });
+
+
+const App = createAppContainer(RootStack);
+
+
+export default App;

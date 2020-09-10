@@ -1,42 +1,45 @@
+import Canvas, { Image as CanvasImage } from 'react-native-canvas';
+
 class WordSearchSolutionDrawer {
-	constructor(context, imageUrl, wordsToSearch, viewWidth, viewHeight) {
-		this.viewWidth = viewWidth;
-		this.viewHeight = viewHeight;
+	constructor(canvas, imageUrl, wordsToSearch, width, height) {
 		this.wordsToSearch = wordsToSearch;
-		this.GLOBAL_ALPHA = 0.55;
+		this.GLOBAL_ALPHA = 0.45;
+		this.PADDING = 80;
 		this.SCALE = 1;
 		this.COLORS = [
 			"aquamarine",
-			"bisque", "black", "blueviolet", "brown", "burlywood",
+			"black", "blueviolet", "brown",
 			"chartreuse", "chocolate", "coral", "cornflowerblue", "crimson",
-			"darkblue", "darkgoldenrod", "darkgreen", "darkkhaki", "darkmagenta",
+			"darkblue", "darkgoldenrod", "darkgreen", "darkkhaki",
 			"darkolivegreen", "darkorange", "darkred", "darksalmon", "darkseagreen",
 			"darkslateblue", "darkturquoise", "darkviolet", "deeppink", "deepskyblue", "dodgerblue",
 			"firebrick", "forestgreen",
 			"gold", "goldenrod",
 			"hotpink",
 			"indianred", "indigo",
-			"khaki",
-			"lightblue", "lightcoral", "lightgreen", "lightpink", "lightsalmon", "lightseagreen",
+			"lightcoral", "lightgreen", "lightsalmon", "lightseagreen",
 			"lightskyblue", "lightslategray", "lightsteelblue", "limegreen",
-			"mediumaquamarine", "mediumblue", "mediumorchid", "mediumpurple",
+			"mediumaquamarine", "mediumblue", "mediumorchid",
 			"mediumseagreen", "mediumslateblue", "mediumturquoise", "mediumvioletred",
 			"navy",
 			"olive", "olivedrab", "orange", "orangered", "orchid",
-			"palegoldenrod", "palegreen", "palevioletred", "peru", "pink", "plum",
-			"powderblue", "purple",
+			"palegoldenrod", "palegreen", "palevioletred", "peru", "plum",
+			"purple",
 			"rosybrown", "royalblue",
-			"saddlebrown", "salmon", "sandybrown", "seagreen", "sienna", "silver",
-			"skyblue", "slateblue", "springgreen", "steelblue",
-			"tan", "thistle", "tomato",
+			"saddlebrown", "salmon", "sandybrown", "seagreen", "sienna",
+			"slateblue", "springgreen", "steelblue",
+			"tomato",
 			"violet",
 			"yellowgreen"
 		];
 
-		this.context = context;
-		this.image = new Image();
+		this.canvas = canvas;
+		this.context = this.canvas.getContext('2d');
+		this.image = new CanvasImage(this.canvas);
 		this.image.crossOrigin = "anonymous";
-		this.image.src = imageUrl;
+		this.image.src = 'data:image/png;base64,' + imageUrl;
+		this.IMAGE_WIDTH = this.canvas.width - 20;
+		this.IMAGE_HEIGHT = this.canvas.height - 20;
 	}
 
 	/**
@@ -45,24 +48,8 @@ class WordSearchSolutionDrawer {
 	 * @param	wordLocations	An object representing the locations of each row, column and diagonal words
 	 */
 	colorBoard(wordLocations) {
-		this.image.onload = (() => {
-			// Apply the correct aspect ratio depending on if we have more width or height
-			if (this.image.width > this.image.height) {
-				let maxHeight = this.image.width / this.image.height * this.viewWidth;
-				this.IMAGE_WIDTH = this.viewWidth;
-				this.IMAGE_HEIGHT = maxHeight;
-			} else {
-				let maxWidth = this.image.width / this.image.height * this.viewHeight;
-				this.IMAGE_WIDTH = maxWidth;
-				this.IMAGE_HEIGHT = this.viewHeight;
-			}
-
-			// Set canvas dimensions
-			this.context.canvas.width = this.IMAGE_WIDTH * this.SCALE;
-			this.context.canvas.height = this.IMAGE_HEIGHT * this.SCALE;
-
-			// Draw word search photo
-			this.context.drawImage(this.image, 0, 0, this.context.canvas.width, this.context.canvas.height);
+		this.image.addEventListener('load', () => {
+			this.context.drawImage(this.image, 0, 0, this.IMAGE_WIDTH, this.IMAGE_HEIGHT);
 
 			// Set transparency
 			this.context.globalAlpha = this.GLOBAL_ALPHA;
@@ -72,8 +59,7 @@ class WordSearchSolutionDrawer {
 			this.colorColumnWords(wordLocations.columns);
 			this.colorBottomLeftDiagonalWords(wordLocations.bottomLeftDiagonals);
 			this.colorBottomRightDiagonalWords(wordLocations.bottomRightDiagonals);
-
-		}).bind(this);
+		});
 	}
 
 	/**
@@ -103,12 +89,11 @@ class WordSearchSolutionDrawer {
 		words.forEach((word) => {
 			let geometry = this.getMinMaxGeometryWord(word);
 			let randomColorIndex = this.getRandomColorIndex();
-			console.log(this.IMAGE_WIDTH);
 
 			this.drawLine(
 				{
 					x: (geometry.minLeft * this.IMAGE_WIDTH) * this.SCALE,
-					y: ((geometry.maxTop * this.IMAGE_HEIGHT) + (geometry.maxHeight * this.IMAGE_HEIGHT) / 2) * this.SCALE
+					y: ((geometry.minTop * this.IMAGE_HEIGHT) + (geometry.maxHeight * this.IMAGE_HEIGHT) / 2) * this.SCALE
 				},
 				{
 					x: ((geometry.maxLeft + geometry.maxWidth) * this.IMAGE_WIDTH) * this.SCALE,
@@ -117,7 +102,7 @@ class WordSearchSolutionDrawer {
 			);
 
 			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
-			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
+			this.colorWordToSearch(wordToColour, randomColorIndex);
 		});
 	}
 
@@ -143,7 +128,7 @@ class WordSearchSolutionDrawer {
 			);
 
 			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
-			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
+			this.colorWordToSearch(wordToColour, randomColorIndex);
 		});
 	}
 
@@ -163,13 +148,13 @@ class WordSearchSolutionDrawer {
 					y: (geometry.maxTop + geometry.maxHeight) * this.IMAGE_HEIGHT * this.SCALE
 				},
 				{
-					x: (geometry.maxLeft * this.IMAGE_WIDTH * this.SCALE) + (geometry.maxHeight * this.IMAGE_HEIGHT / 2),
+					x: (geometry.maxLeft * this.IMAGE_WIDTH * this.SCALE) + (geometry.maxHeight * this.IMAGE_HEIGHT * this.SCALE),
 					y: (geometry.minTop * this.IMAGE_HEIGHT * this.SCALE)
 				}, geometry.maxHeight, randomColorIndex
 			);
 
 			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
-			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
+			this.colorWordToSearch(wordToColour, randomColorIndex);
 		});
 	}
 
@@ -189,13 +174,13 @@ class WordSearchSolutionDrawer {
 					y: (geometry.minTop * this.IMAGE_HEIGHT) * this.SCALE
 				},
 				{
-					x: (geometry.maxLeft * this.IMAGE_WIDTH - geometry.maxHeight * this.IMAGE_WIDTH / 2) * this.SCALE + (geometry.maxHeight * this.IMAGE_HEIGHT / 2),
-					y: (geometry.maxTop) * this.IMAGE_HEIGHT * this.SCALE + (geometry.maxHeight * this.IMAGE_HEIGHT / 2)
+					x: (geometry.maxLeft * this.IMAGE_WIDTH) * this.SCALE + (geometry.maxHeight * this.IMAGE_HEIGHT * this.SCALE),
+					y: (geometry.maxTop) * this.IMAGE_HEIGHT * this.SCALE + (geometry.maxHeight * this.IMAGE_HEIGHT * this.SCALE)
 				}, geometry.maxHeight, randomColorIndex
 			);
 
 			let wordToColour = this.wordsToSearch[word.map((letter) => letter.text).join('')];
-			this.colorWordToSearch(wordToColour, geometry.maxHeight, randomColorIndex);
+			this.colorWordToSearch(wordToColour, randomColorIndex);
 		});
 	}
 

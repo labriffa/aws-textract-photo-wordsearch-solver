@@ -2,6 +2,7 @@ class WordSearchSolver {
 	constructor(blocks) {
 		this.board = [];
 		this.wordsToSearch = [];
+		this.CONFIDENCE_THRESHOLD = 80;
 		this.generateBoard(blocks);
 	}
 
@@ -29,7 +30,9 @@ class WordSearchSolver {
 			} else if (block.BlockType === 'WORD') {
 				// Find all searchable words (Assume for now that they appear towards the bottom half of the screen)
 				if (block.Text && block.Text.length > 1) {
-					this.wordsToSearch[block.Text.toUpperCase()] = block.Geometry.BoundingBox;
+					if (block.Confidence >= this.CONFIDENCE_THRESHOLD) {
+						this.wordsToSearch[block.Text.toUpperCase()] = block.Geometry.BoundingBox;
+					}
 				}
 
 				// Find all letters
@@ -197,6 +200,22 @@ class WordSearchSolver {
 		}
 
 		return foundWords;
+	}
+
+	/**
+	 * Looks through the entire board to find any matching words
+	 * 
+	 * @param		A list of words to check against
+	 * 
+	 * @returns		An object array comprised of 2D direction arrays representing the found letters of each identified word
+	 */
+	findWords(words) {
+		return {
+			rows: this.findWordsInRows(words),
+			columns: this.findWordsInColumns(words),
+			bottomLeftDiagonals: this.findWordsInBottomLeftDiagonals(words),
+			bottomRightDiagonals: this.findWordsInBottomRightDiagonals(words),
+		};
 	}
 
 	/**
