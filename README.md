@@ -1,6 +1,4 @@
-![word search solver logo](https://res.cloudinary.com/dj7k0lade/image/upload/v1599667839/github/wordsearch-solver-logo_resized.png)
-<br />
----
+<img height="42.6" width="360" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599939007/github/wordsearch-photo-solver-logo.png" alt="Wordsearch to Solve" />
 Attempts to identify words on a given word search photo. Uses AWS Amplify and Expo to provide a cross platform solution that allows individuals to take photos using their mobiles. The application uses AWS Textract to find corresponding letter locations and uses the React Native Canvas component to apply colouring over the given photo.
   
 ## Photo to Solution

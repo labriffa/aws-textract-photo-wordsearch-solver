@@ -1,7 +1,7 @@
 import Canvas, { Image as CanvasImage } from 'react-native-canvas';
 
 class WordSearchSolutionDrawer {
-	constructor(canvas, imageUrl, wordsToSearch, width, height) {
+	constructor(canvas, imageUrl, wordsToSearch) {
 		this.wordsToSearch = wordsToSearch;
 		this.GLOBAL_ALPHA = 0.45;
 		this.PADDING = 80;
@@ -38,8 +38,8 @@ class WordSearchSolutionDrawer {
 		this.image = new CanvasImage(this.canvas);
 		this.image.crossOrigin = "anonymous";
 		this.image.src = 'data:image/png;base64,' + imageUrl;
-		this.IMAGE_WIDTH = this.canvas.width - 20;
-		this.IMAGE_HEIGHT = this.canvas.height - 20;
+		this.IMAGE_WIDTH = this.canvas.width;
+		this.IMAGE_HEIGHT = this.canvas.height;
 	}
 
 	/**
@@ -47,7 +47,7 @@ class WordSearchSolutionDrawer {
 	 * 
 	 * @param	wordLocations	An object representing the locations of each row, column and diagonal words
 	 */
-	colorBoard(wordLocations) {
+	colorBoard(wordLocations, resolve) {
 		this.image.addEventListener('load', () => {
 			this.context.drawImage(this.image, 0, 0, this.IMAGE_WIDTH, this.IMAGE_HEIGHT);
 
@@ -59,6 +59,8 @@ class WordSearchSolutionDrawer {
 			this.colorColumnWords(wordLocations.columns);
 			this.colorBottomLeftDiagonalWords(wordLocations.bottomLeftDiagonals);
 			this.colorBottomRightDiagonalWords(wordLocations.bottomRightDiagonals);
+
+			resolve();
 		});
 	}
 
