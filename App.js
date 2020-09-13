@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Image, Header } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
-import HomeScreen from './screens/HomeScreen'
+import SolutionScreen from './screens/SolutionScreen'
 import CameraScreen from './screens/CameraScreen'
 
 const RootStack = createStackNavigator({
 	Home: {
-		screen: HomeScreen,
+		screen: SolutionScreen,
 		navigationOptions: () => ({
 			headerTintColor: 'white',
 			headerTitle: '',
@@ -19,12 +19,11 @@ const RootStack = createStackNavigator({
 				flex: 1,
 				fontSize: 19
 			},
-			headerBackground: (
+			headerBackground: () =>
 				<Image
 					style={StyleSheet.absoluteFill}
-					source={{ uri: 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599773321/github/wordsearch-photo-solver-logo-bg.png' }}
+					source={{ uri: 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599942924/github/Group_13.png' }}
 				/>
-			)
 		})
 	},
 	Camera: {
@@ -40,22 +39,6 @@ const RootStack = createStackNavigator({
 		}
 	},
 );
-
-const styles = StyleSheet.create({
-	text: {
-		backgroundColor: '#e84118',
-		textAlign: 'center',
-		borderRadius: 5,
-		paddingTop: 5,
-		paddingBottom: 5,
-		color: 'white',
-		borderWidth: 2,
-		borderColor: '#e84118',
-		fontSize: 16,
-		width: 100,
-		marginRight: 15
-	}
-});
 
 const App = createAppContainer(RootStack);
 

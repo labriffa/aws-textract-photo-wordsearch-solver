@@ -1,46 +1,41 @@
 import React from 'react';
 import { StyleSheet, View, TouchableWithoutFeedback, Text, Image } from 'react-native';
-import { WordsearchSolver } from '../services/wordSearchSolver';
-import { WordsearchSolutionDrawer } from '../services/wordSearchSolutionDrawer';
-let awsTextractResponse = require('../tests/mock-textract-response.json');
 import Canvas from 'react-native-canvas';
 import { SafeAreaView } from 'react-navigation'
 import { StatusBar } from 'expo-status-bar';
 import Spinner from 'react-native-loading-spinner-overlay';
+
+// Services
+import TextractAPI from '../services/textractAPI';
+import WordSearchSolver from '../services/wordSearchSolver';
+import WordSearchSolutionDrawer from '../services/wordSearchSolutionDrawer';
+
+// Styles
 import buttonStyles from '../config/buttons';
 import colors from '../config/colors';
-import TextractAPI from '../services/textractAPI';
+import preload from '../assets/preload.png';
 
-export default class HomeScreen extends React.Component {
-	constructor() {
-		super();
-		this.CANVAS_PADDING = 10;
-		this.textractApi = new TextractAPI();
+export default class SolutionScreen extends React.Component {
+	static get CANVAS_PADDING() {
+		return 10;
 	}
 
 	state = {
-		width: 0,
-		height: 0,
-		canvas: null,
-		base64: '',
-		spinner: false,
+		spinner: false
 	}
 
 	handleCanvas() {
 		if (this.state.canvas != null) {
 			this.setState({ spinner: true });
-			this.state.canvas.width = this.state.width - this.CANVAS_PADDING;
-			this.state.canvas.height = this.state.height - this.CANVAS_PADDING;
-			this.textractApi.detectDocumentText(this.state.base64, (data) => {
-				awsTextractResponse = data;
-				const solver = new WordsearchSolver(awsTextractResponse.Blocks);
-				const words = solver.getWordsToSearch();
-				const foundWords = solver.findWords(Object.keys(words));
-				var drawer = new WordsearchSolutionDrawer(
-					this.state.canvas,
-					this.state.base64,
-					words
-				);
+			this.state.canvas.width = this.state.width - SolutionScreen.CANVAS_PADDING;
+			this.state.canvas.height = this.state.height - SolutionScreen.CANVAS_PADDING;
+			let textractApi = new TextractAPI();
+			textractApi.detectDocumentText(this.state.base64, (data) => {
+				let awsTextractResponse = data;
+				let solver = new WordSearchSolver(awsTextractResponse.Blocks);
+				let searchableWords = solver.getWordsToSearch();
+				let foundWords = solver.findWords(Object.keys(searchableWords));
+				var drawer = new WordSearchSolutionDrawer(this.state.canvas, this.state.base64, searchableWords);
 				drawer.colorBoard({
 					rows: foundWords.rows,
 					columns: foundWords.columns,
@@ -72,23 +67,22 @@ export default class HomeScreen extends React.Component {
 	render() {
 		return (
 			<SafeAreaView style={styles.container}>
-				<View style={styles.view} onLayout={(event) => {
+				<StatusBar style="light" />
+				<Spinner
+					visible={this.state.spinner}
+					textContent={'Loading...'}
+					textStyle={styles.spinnerTextStyle}
+					color={colors.mint}
+				/>
+
+				<View style={styles.canvasView} onLayout={(event) => {
 					this.state.width = event.nativeEvent.layout.width;
 					this.state.height = event.nativeEvent.layout.height;
 				}}>
-					<Spinner
-						visible={this.state.spinner}
-						textContent={'Loading...'}
-						textStyle={styles.spinnerTextStyle}
-						color='#10ac84'
-					/>
-					<Image style={[StyleSheet.absoluteFillObject, { borderRadius: 5 }]}
-						source={{
-							uri: 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599776241/github/Group.png',
-						}}
+					<Image style={styles.preload}
+						source={preload}
 					/>
 					<Canvas ref={canvas => { this.state.canvas = canvas; }} style={styles.canvas} />
-					<StatusBar style="light" />
 				</View>
 				<TouchableWithoutFeedback onPress={() => this.props.navigation.navigate('Camera')}>
 					<Text style={buttonStyles.buttonPrimary}>Solve</Text>
@@ -105,13 +99,20 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center'
 	},
-	view: {
+	canvasView: {
 		backgroundColor: colors.lightGrey,
 		position: 'absolute',
 		top: 15,
-		borderRadius: 20,
-		width: '95%',
+		borderRadius: 5,
+		width: '90%',
 		height: '85%',
 		padding: 5
+	},
+	preload: {
+		position: 'absolute',
+		borderRadius: 5,
+		resizeMode: 'cover',
+		width: '100%',
+		height: '100%'
 	}
 });

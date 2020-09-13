@@ -3,6 +3,8 @@ import { Text, View } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as Permissions from 'expo-permissions';
 import Spinner from 'react-native-loading-spinner-overlay';
+
+// Styles
 import buttonStyles from '../config/buttons';
 import colors from '../config/colors';
 
@@ -28,7 +30,7 @@ export default class CameraScreen extends React.Component {
 		if (this.camera) {
 			this.setState({ spinner: true });
 			const options = {
-				quality: 0.8, base64: true, onPictureSaved: (photo) => {
+				quality: 0.4, base64: true, onPictureSaved: (photo) => {
 					this.setState({ spinner: false, base64: photo.base64 }, () => {
 						this.props.navigation.navigate('Home', {
 							base64: this.state.base64
@@ -51,7 +53,7 @@ export default class CameraScreen extends React.Component {
 		}
 
 		return (
-			<View style={{ flex: 1 }}>
+			<View style={styles.cameraView}>
 				<Spinner
 					visible={this.state.spinner}
 					textContent={'Loading...'}
@@ -59,14 +61,22 @@ export default class CameraScreen extends React.Component {
 					color='#10ac84'
 				/>
 
-				<Camera style={{ flex: 1 }} type={Camera.Constants.Type.back} ref={camera => this.camera = camera} flashMode={'auto'}></Camera>
-				<Text style={buttonStyles.buttonPrimary} onPress={() => { this.takePicture() }}>Take Photo</Text>
+				<Camera style={styles.camera} type={Camera.Constants.Type.back} ref={camera => this.camera = camera} flashMode={'auto'}></Camera>
+				<Text style={buttonStyles.buttonPrimary} onPress={() => { this.takePicture() }}>
+					Take Photo
+				</Text>
 			</View>
 		);
 	};
 };
 
 const styles = {
+	cameraView: {
+		flex: 1
+	},
+	camera: {
+		flex: 1
+	},
 	spinnerTextStyle: {
 		color: colors.white
 	}

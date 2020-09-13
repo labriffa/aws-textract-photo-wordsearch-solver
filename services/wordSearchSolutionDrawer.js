@@ -1,6 +1,6 @@
-import Canvas, { Image as CanvasImage } from 'react-native-canvas';
+import { Image as CanvasImage } from 'react-native-canvas';
 
-class WordSearchSolutionDrawer {
+export default class WordSearchSolutionDrawer {
 	constructor(canvas, imageUrl, wordsToSearch) {
 		this.wordsToSearch = wordsToSearch;
 		this.GLOBAL_ALPHA = 0.45;
@@ -240,5 +240,3 @@ class WordSearchSolutionDrawer {
 		return Math.floor(Math.random() * this.COLORS.length);
 	}
 }
-
-export const WordsearchSolutionDrawer = WordSearchSolutionDrawer;

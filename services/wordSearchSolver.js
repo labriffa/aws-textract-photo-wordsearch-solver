@@ -1,8 +1,8 @@
-class WordSearchSolver {
+export default class WordSearchSolver {
 	constructor(blocks) {
 		this.board = [];
 		this.wordsToSearch = [];
-		this.CONFIDENCE_THRESHOLD = 80;
+		this.CONFIDENCE_THRESHOLD = 70;
 		this.generateBoard(blocks);
 	}
 
@@ -282,5 +282,3 @@ class WordSearchSolver {
 		return this.wordsToSearch;
 	}
 }
-
-export const WordsearchSolver = WordSearchSolver;
