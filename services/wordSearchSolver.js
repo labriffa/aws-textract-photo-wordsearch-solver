@@ -3,6 +3,7 @@ export default class WordSearchSolver {
 		this.board = [];
 		this.wordsToSearch = [];
 		this.CONFIDENCE_THRESHOLD = 70;
+		this.MIN_SUPPORTED_LENGTH = 5;
 		this.generateBoard(blocks);
 	}
 
@@ -19,13 +20,12 @@ export default class WordSearchSolver {
 		for (const block of blocks) {
 			// Find all lines with spaces in them
 			if (block.BlockType === 'LINE') {
-				if (block.Text.indexOf(' ') >= 0 && block.Text.match(/([\s]+)/g).length >= 5) {
+				if (block.Text.indexOf(' ') >= 0 && block.Text.match(/([\s]+)/g).length >= this.MIN_SUPPORTED_LENGTH) {
 					this.board.push(block.Text.split(' ').join('').split(''));
 
 					// Store the parent ids so we can associate the word/letter children later
 					parentLineIds.push(block.Id);
 					parentIdsToChildrenIds[block.Id] = block.Relationships[0].Ids;
-
 				}
 			} else if (block.BlockType === 'WORD') {
 				// Find all searchable words (Assume for now that they appear towards the bottom half of the screen)
@@ -37,7 +37,6 @@ export default class WordSearchSolver {
 
 				// Find all letters
 				if (block.Text && block.Text.length === 1) {
-
 					// Find the matching parent line ID
 					for (const key of Object.keys(parentIdsToChildrenIds)) {
 						let children = parentIdsToChildrenIds[key];

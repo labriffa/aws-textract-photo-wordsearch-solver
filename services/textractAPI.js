@@ -9,7 +9,7 @@ export default class TextractAPI {
 				base64: base64
 			})
 		})
-			.then(response => response.json())
+			.then(response => { response.json() })
 			.then(json => {
 				resolve(json);
 			}).catch((e) => {

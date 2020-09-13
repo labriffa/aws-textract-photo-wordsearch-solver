@@ -58,7 +58,7 @@ export default class CameraScreen extends React.Component {
 					visible={this.state.spinner}
 					textContent={'Loading...'}
 					textStyle={styles.spinnerTextStyle}
-					color='#10ac84'
+					color={colors.mint}
 				/>
 
 				<Camera style={styles.camera} type={Camera.Constants.Type.back} ref={camera => this.camera = camera} flashMode={'auto'}></Camera>

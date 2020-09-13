@@ -1,14 +1,14 @@
 import React from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback, Text, Image } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback, Text, Image, Alert } from 'react-native';
 import Canvas from 'react-native-canvas';
 import { SafeAreaView } from 'react-navigation'
 import { StatusBar } from 'expo-status-bar';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 // Services
-import TextractAPI from '../services/textractAPI';
-import WordSearchSolver from '../services/wordSearchSolver';
-import WordSearchSolutionDrawer from '../services/wordSearchSolutionDrawer';
+import TextractAPI from '../services/TextractAPI';
+import WordSearchSolver from '../services/WordSearchSolver';
+import WordSearchSolutionDrawer from '../services/WordSearchSolutionDrawer';
 
 // Styles
 import buttonStyles from '../config/buttons';
@@ -21,6 +21,7 @@ export default class SolutionScreen extends React.Component {
 	}
 
 	state = {
+		canvas: null,
 		spinner: false
 	}
 
@@ -29,21 +30,31 @@ export default class SolutionScreen extends React.Component {
 			this.setState({ spinner: true });
 			this.state.canvas.width = this.state.width - SolutionScreen.CANVAS_PADDING;
 			this.state.canvas.height = this.state.height - SolutionScreen.CANVAS_PADDING;
-			let textractApi = new TextractAPI();
+			const textractApi = new TextractAPI();
 			textractApi.detectDocumentText(this.state.base64, (data) => {
-				let awsTextractResponse = data;
-				let solver = new WordSearchSolver(awsTextractResponse.Blocks);
-				let searchableWords = solver.getWordsToSearch();
-				let foundWords = solver.findWords(Object.keys(searchableWords));
-				var drawer = new WordSearchSolutionDrawer(this.state.canvas, this.state.base64, searchableWords);
-				drawer.colorBoard({
-					rows: foundWords.rows,
-					columns: foundWords.columns,
-					bottomLeftDiagonals: foundWords.bottomLeftDiagonals,
-					bottomRightDiagonals: foundWords.bottomRightDiagonals
-				}, () => {
-					this.setState({ spinner: false });
-				});
+				if (data) {
+					const solver = new WordSearchSolver(data);
+					const searchableWords = solver.getWordsToSearch();
+					console.log('searchable words', searchableWords);
+					const foundWords = solver.findWords(Object.keys(searchableWords));
+					const drawer = new WordSearchSolutionDrawer(this.state.canvas, this.state.base64, searchableWords);
+					drawer.colorBoard({
+						rows: foundWords.rows,
+						columns: foundWords.columns,
+						bottomLeftDiagonals: foundWords.bottomLeftDiagonals,
+						bottomRightDiagonals: foundWords.bottomRightDiagonals
+					}, () => {
+						this.setState({ spinner: false });
+					});
+				} else {
+					Alert.alert(
+						"Unrecognised Word Search",
+						"There was a problem processing your word search please try again.",
+						[
+							{ text: "OK" }
+						]
+					);
+				}
 			});
 		}
 	}

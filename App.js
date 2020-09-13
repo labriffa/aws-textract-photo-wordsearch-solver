@@ -1,28 +1,20 @@
-import React, { Component } from 'react';
-import { StyleSheet, View, Image, Header } from 'react-native';
+import React from 'react';
+import { StyleSheet, Image } from 'react-native';
 import { createAppContainer } from 'react-navigation';
 import { createStackNavigator, TransitionPresets } from 'react-navigation-stack';
 import SolutionScreen from './screens/SolutionScreen'
 import CameraScreen from './screens/CameraScreen'
+import logoBg from './assets/logo-bg.png';
 
 const RootStack = createStackNavigator({
 	Home: {
 		screen: SolutionScreen,
 		navigationOptions: () => ({
-			headerTintColor: 'white',
 			headerTitle: '',
-			headerStyle: {
-				backgroundColor: '#353b48'
-			},
-			headerTitleStyle: {
-				textAlign: "center",
-				flex: 1,
-				fontSize: 19
-			},
 			headerBackground: () =>
 				<Image
-					style={StyleSheet.absoluteFill}
-					source={{ uri: 'https://res.cloudinary.com/dj7k0lade/image/upload/v1599942924/github/Group_13.png' }}
+					style={styles.logoBg}
+					source={logoBg}
 				/>
 		})
 	},
@@ -40,7 +32,13 @@ const RootStack = createStackNavigator({
 	},
 );
 
-const App = createAppContainer(RootStack);
+const styles = StyleSheet.create({
+	logoBg: {
+		width: '100%',
+		height: '100%'
+	}
+});
 
+const App = createAppContainer(RootStack);
 
 export default App;

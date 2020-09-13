@@ -1,4 +1,4 @@
-import { WordsearchSolver } from '../wordSearchSolver';
+import WordSearchSolver from '../services/wordSearchSolver';
 
 var assert = require('assert');
 var fs = require('fs');
@@ -26,7 +26,7 @@ describe('WordsearchSolver', function () {
 		// Rows
 		it('should extract all rows', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			const rows = solver.getRows();
 			const expectedRows = [
 				['Y', 'Q', 'H', 'Y', 'B', 'V', 'S', 'E', 'P', 'N'],
@@ -52,7 +52,7 @@ describe('WordsearchSolver', function () {
 		// Columns
 		it('should extract all columns', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			const columns = solver.getColumns();
 			const expectedColumns = [
 				['Y', 'E', 'B', 'H', 'Q', 'H', 'P', 'S', 'S', 'R'],
@@ -78,7 +78,7 @@ describe('WordsearchSolver', function () {
 		// Bottom Right Diagonals
 		it('should extract all diagonals originating from the bottom right', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			let diagonals = solver.getBottomRightDiagonals();
 			const expectedDiagonals = [
 				['Y', 'R', 'U', 'C', 'R', 'E', 'M', 'U', 'Q', 'S'],
@@ -113,7 +113,7 @@ describe('WordsearchSolver', function () {
 		// Bottom Left Diagonals
 		it('should extract all diagonals originating from the bottom left', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			let diagonals = solver.getBottomLeftDiagonals();
 
 			const expectedDiagonals = [
@@ -151,7 +151,7 @@ describe('WordsearchSolver', function () {
 		// Rows
 		it('should find all possible words on each row', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			const foundWords = solver.findWordsInRows(WORDS_TO_SEARCH);
 			const expectedWords = [
 				['S', 'A', 'T', 'U', 'R', 'N'],
@@ -170,7 +170,7 @@ describe('WordsearchSolver', function () {
 		//Columns
 		it('should find all possible words on each column', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			const foundWords = solver.findWordsInColumns(WORDS_TO_SEARCH);
 			const expectedWords = [
 				['J', 'U', 'P', 'I', 'T', 'E', 'R'],
@@ -189,7 +189,7 @@ describe('WordsearchSolver', function () {
 		// Diagonals
 		it('should find all possible words on each diagonal', function () {
 			let blocks = JSON.parse(awsTextractResponse).Blocks;
-			const solver = new WordsearchSolver(blocks);
+			const solver = new WordSearchSolver(blocks);
 			const foundWords = solver.findWordsInDiagonals(WORDS_TO_SEARCH);
 			const expectedWords = [
 				['E', 'A', 'R', 'T', 'H'],
