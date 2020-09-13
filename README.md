@@ -3,9 +3,9 @@ Attempts to identify words from a given word search photo. Uses AWS Amplify and 
   
 ## Photo to Solution
 <p align="center">
-  <img height="440" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666608/github/download_5.png" alt="Word Search to Solve" />
-  <img height="440" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1599666811/github/download_6.png" alt="Word Search Solved" />
-  <img height="420" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1600027415/github/word-search-photo-solver-mockup.png" alt="Word Search Solved Mobile" />
+  <img height="440" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1600028492/github/wordsearch-unsolved.png" alt="Word Search to Solve" />
+  <img height="440" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1600028470/github/wordsearch-solved.png" alt="Word Search Solved" />
+  <img height="440" src="https://res.cloudinary.com/dj7k0lade/image/upload/v1600027415/github/word-search-photo-solver-mockup.png" alt="Word Search Solved Mobile" />
 </p>
 
 ## Possible Improvements

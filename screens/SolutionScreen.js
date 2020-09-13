@@ -32,10 +32,9 @@ export default class SolutionScreen extends React.Component {
 			this.state.canvas.height = this.state.height - SolutionScreen.CANVAS_PADDING;
 			const textractApi = new TextractAPI();
 			textractApi.detectDocumentText(this.state.base64, (data) => {
-				if (data) {
-					const solver = new WordSearchSolver(data);
+				if (data && data.Blocks) {
+					const solver = new WordSearchSolver(data.Blocks);
 					const searchableWords = solver.getWordsToSearch();
-					console.log('searchable words', searchableWords);
 					const foundWords = solver.findWords(Object.keys(searchableWords));
 					const drawer = new WordSearchSolutionDrawer(this.state.canvas, this.state.base64, searchableWords);
 					drawer.colorBoard({
