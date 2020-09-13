@@ -1,8 +1,8 @@
-import WordSearchSolver from '../services/wordSearchSolver';
+import WordSearchSolver from '../services/WordSearchSolver';
 
-var assert = require('assert');
-var fs = require('fs');
-var awsTextractResponse;
+const assert = require('assert');
+const fs = require('fs');
+let awsTextractResponse;
 const WORDS_TO_SEARCH = [
 	'EARTH',
 	'JUPITER',
